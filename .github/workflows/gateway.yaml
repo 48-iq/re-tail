@@ -1,0 +1,62 @@
+name: Backend CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'back/gateway/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'back/gateway/**'
+jobs:
+  build:
+    name: Build Gateway
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: 21
+
+      - name: Install core library
+        run: |
+          cd back/core
+          mvn clean install
+
+      - name: Build Gateway with Maven
+        run: |
+          cd back/gateway
+          mvn clean package
+
+      - name: Run tests for Gateway
+        run: |
+          cd back/gateway
+          mvn test
+
+      - name: Lint with Maven for Gateway
+        run: |
+          cd back/gateway
+          mvn spotless:check
+
+      - name: Build Docker image for Gateway
+        run: |
+          back/gateway
+          docker build -t re-tail/${{ github.event.repository.name }}:${{ github.sha }} .
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Push to Docker Hub
+        run: |
+          docker push re-tail/${{ github.event.repository.name }}:${{ github.sha }}
