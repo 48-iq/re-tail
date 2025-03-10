@@ -3,29 +3,18 @@ name: Backend CI/CD Pipeline
 on:
   push:
     branches:
-      - dev
+      - main
+    paths:
+      - 'back/gateway/**'
   pull_request:
     branches:
-      - dev
+      - main
+    paths:
+      - 'back/gateway/**'
 jobs:
   build:
-    name: Build app
+    name: Build Gateway
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        service:
-          - back/announcement-service
-          - back/auth-service
-          - back/blacklist-service
-          - back/chat-service
-          - back/comment-service
-          - back/discovery-service
-          - back/favourite-service
-          - back/gateway
-          - back/notification-service
-          - back/recommendation-service
-          - back/user-service
 
     steps:
       - name: Checkout code
@@ -42,24 +31,24 @@ jobs:
           cd back/core
           mvn clean install
 
-      - name: Build with Maven
+      - name: Build Gateway with Maven
         run: |
-          cd ${{ matrix.service }}
+          cd back/gateway
           mvn clean package
 
-      - name: Run tests
+      - name: Run tests for Gateway
         run: |
-          cd ${{ matrix.service }}
+          cd back/gateway
           mvn test
 
-      - name: Lint with Maven
+      - name: Lint with Maven for Gateway
         run: |
-          cd ${{ matrix.service }}
+          cd back/gateway
           mvn spotless:check
 
-      - name: Build Docker image
+      - name: Build Docker image for Gateway
         run: |
-          cd ${{ matrix.service }}
+          back/gateway
           docker build -t re-tail/${{ github.event.repository.name }}:${{ github.sha }} .
 
       - name: Login to Docker Hub
