@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RecomendationServiceApplication {
+public class RecommendationServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RecomendationServiceApplication.class, args);
+		SpringApplication.run(RecommendationServiceApplication.class, args);
 	}
 
 }
