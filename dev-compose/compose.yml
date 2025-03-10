@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:latest
     ports:
-      - 5432:5432
+      - :5432
     healthcheck:
       test:  ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER}'"]
       interval: 10s
@@ -22,19 +22,22 @@ services:
   redis:
     image: redis:latest
     ports:
-      - 6379:6379
+      - :6379
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     healthcheck:
       test:  ["CMD-SHELL", "sh -c 'redis-cli ping'"]
       interval: 10s
       timeout: 5s
       retries: 3
+
     networks:
       - back-network
 
   kafka:
     image: bitnami/kafka:latest
     ports:
-      - 9092:9092
+      - :9092
     environment:
       - KAFKA_CFG_NODE_ID=1
       - KAFKA_KRAFT_CLUSTER_ID=abracadabra
@@ -61,7 +64,7 @@ services:
       context: ../back
       dockerfile: ../dev-compose/discovery-service.Dockerfile
     ports:
-      - 8761:8761
+      - :8761
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8761/actuator/health || exit 1"]
       interval: 10s
@@ -87,7 +90,8 @@ services:
       - CORS_ALLOWED_HEADERS=${CORS_ALLOWED_HEADERS}
       - CORS_ALLOW_CREDENTIALS=${CORS_ALLOW_CREDENTIALS}
     depends_on:
-      - discovery-service
+      discovery-service:
+        condition: service_healthy
     networks:
       - back-network
 
@@ -98,10 +102,28 @@ services:
       context: ../back
       dockerfile: ../dev-compose/auth-service.Dockerfile
     ports:
-      - 8081:8081
+      - :8080
     depends_on:
-      - discovery-service
-      - gateway
+      discovery-service:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - JWT_ACCESS_DURATION=${JWT_ACCESS_DURATION}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_REFRESH_DURATION=${JWT_REFRESH_DURATION}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - POSTGRES_URL=jdbc:postgresql://postgres:5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_DATABASE_NUMBER=1
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     networks:
       - back-network
 
@@ -111,3 +133,4 @@ networks:
 volumes:
   kafka-data:
   postgres-data:
+  redis-data:
