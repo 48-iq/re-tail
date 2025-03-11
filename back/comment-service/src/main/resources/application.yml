@@ -1,6 +1,6 @@
 spring:
   application:
-    name: auth-service
+    name: comment-service
 
   datasource:
     url: ${POSTGRES_URI}
@@ -23,7 +23,4 @@ eureka:
 
 app:
   jwt:
-    accessDuration: ${JWT_ACCESS_DURATION}
     accessSecret: ${JWT_ACCESS_SECRET}
-    refreshDuration: ${JWT_REFRESH_DURATION}
-    refreshSecret: ${JWT_REFRESH_SECRET}
