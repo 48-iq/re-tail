@@ -5,6 +5,7 @@
     <file url="file://$PROJECT_DIR$/back/blacklist-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/back/chat-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/back/comment-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/back/core/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/back/discovery-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/back/favourite-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/back/gateway/src/main/java" charset="UTF-8" />

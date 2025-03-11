@@ -1,14 +1,7 @@
 name: Backend CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'back/favourite-service/**'
   pull_request:
-    branches:
-      - main
     paths:
       - 'back/favourite-service/**'
 jobs:
@@ -26,6 +19,11 @@ jobs:
           distribution: 'adopt'
           java-version: 21
 
+      - name: Install Maven
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y maven
+
       - name: Install core library
         run: |
           cd back/core
@@ -34,7 +32,7 @@ jobs:
       - name: Build Favourite Service with Maven
         run: |
           cd back/favourite-service
-          mvn clean package
+          mvn clean package -DskipTests
 
       - name: Run tests for Favourite Service
         run: |
@@ -51,6 +49,13 @@ jobs:
           back/favourite-service
           docker build -t re-tail/${{ github.event.repository.name }}:${{ github.sha }} .
 
+  push_to_docker:
+    name: Push to Docker Hub
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
+
+    steps:
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:

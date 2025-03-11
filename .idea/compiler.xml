@@ -10,6 +10,7 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
         <module name="recomendation-service" />
+        <module name="core" />
         <module name="blacklist-service" />
         <module name="announcement-service" />
         <module name="comment-service" />
@@ -28,6 +29,7 @@
       <module name="blacklist-service" options="-parameters" />
       <module name="chat-service" options="-parameters" />
       <module name="comment-service" options="-parameters" />
+      <module name="core" options="-parameters" />
       <module name="discovery-service" options="-parameters" />
       <module name="favourite-service" options="-parameters" />
       <module name="gateway" options="-parameters" />
