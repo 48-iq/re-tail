@@ -1,0 +1,9 @@
+create database announcement_service;
+create database auth_service;
+create database blacklist_service;
+create database chat_service;
+create database comment_service;
+create database favourite_service;
+create database notification_service;
+create database recommendation_service;
+create database user_service;

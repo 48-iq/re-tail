@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: ${POSTGRES_URI}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI}
+    instance:
+      preferIpAddress: true
+
+app:
+  jwt:
+    accessDuration: ${JWT_ACCESS_DURATION}
+    accessSecret: ${JWT_ACCESS_SECRET}
+    refreshDuration: ${JWT_REFRESH_DURATION}
+    refreshSecret: ${JWT_REFRESH_SECRET}
