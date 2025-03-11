@@ -89,6 +89,7 @@ services:
       - CORS_ALLOWED_METHODS=${CORS_ALLOWED_METHODS}
       - CORS_ALLOWED_HEADERS=${CORS_ALLOWED_HEADERS}
       - CORS_ALLOW_CREDENTIALS=${CORS_ALLOW_CREDENTIALS}
+      - EUREKA_URI=http://discovery-service:8761/eureka
     depends_on:
       discovery-service:
         condition: service_healthy
@@ -117,13 +118,14 @@ services:
       - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
       - JWT_REFRESH_DURATION=${JWT_REFRESH_DURATION}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
-      - POSTGRES_URL=jdbc:postgresql://postgres:5432
+      - POSTGRES_URI=jdbc:postgresql://postgres:5432/auth_service
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - REDIS_DATABASE_NUMBER=1
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - EUREKA_URI=http://discovery-service:8761/eureka
     networks:
       - back-network
 

@@ -6,9 +6,11 @@ server:
 
 eureka:
   client:
-    defaultZone: http://discovery-service:8761/eureka
-    registerWithEureka: false
-    fetchRegistry: false
+    serviceUrl:
+      defaultZone: ${EUREKA_URI}
+    instance:
+      preferIpAddress: true
+
 app:
   cors:
     allowedOrigins: ${CORS_ALLOWED_ORIGINS}
