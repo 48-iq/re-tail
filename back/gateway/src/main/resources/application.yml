@@ -10,6 +10,8 @@ eureka:
       defaultZone: ${EUREKA_URI}
     instance:
       preferIpAddress: true
+    registerWithEureka: false
+    fetchRegistry: false
 
 app:
   cors:

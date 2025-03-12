@@ -1,5 +1,9 @@
 FROM maven:3.9.9-eclipse-temurin-21-jammy AS build
 
+ARG SERVICE
+
+ENV SERVICE=$SERVICE
+
 WORKDIR /core
 COPY core/pom.xml pom.xml
 RUN mvn dependency:resolve
@@ -9,10 +13,10 @@ RUN mvn install -DskipTests
 
 
 WORKDIR /app
-COPY favourite-service/pom.xml pom.xml
+COPY $SERVICE/pom.xml pom.xml
 RUN mvn dependency:resolve
 
-COPY favourite-service/src src
+COPY $SERVICE/src src
 RUN mvn package -DskipTests
 
 FROM eclipse-temurin:21-jre-jammy
