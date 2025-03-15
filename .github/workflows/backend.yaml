@@ -1,0 +1,101 @@
+name: Backend CI/CD Pipeline
+
+on:
+  pull_request:
+    paths:
+      - 'back/**'
+
+jobs:
+  determine_changes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get changed services
+        id: get_changed_services
+        run: |
+          CHANGED_SERVICES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- back/ | grep '/' | cut -d'/' -f2 | sort -u | grep -v '^core$' | tr '\n' ' ')
+          echo "SERVICES=${CHANGED_SERVICES}" >> $GITHUB_ENV
+
+  setup_environment:
+    runs-on: ubuntu-latest
+    needs: determine_changes
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: 21
+
+      - name: Install Maven
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y maven
+
+      - name: Install core library
+        run: |
+          cd back/core
+          mvn clean install
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: setup_environment
+    if: ${{ env.SERVICES != '' }}
+    strategy:
+      matrix:
+        service: ${{ fromJson(env.SERVICES) }}
+
+    steps:
+      - name: Lint with Checkstyle for ${{ matrix.service }}
+        run: |
+          cd back/${{ matrix.service }}
+          mvn checkstyle:check
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    if: success()
+    strategy:
+      matrix:
+        service: ${{ fromJson(env.SERVICES) }}
+
+    steps:
+      - name: Run tests for ${{ matrix.service }}
+        run: |
+          cd back/${{ matrix.service }}
+          mvn test
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    if: success()
+    strategy:
+      matrix:
+        service: ${{ fromJson(env.SERVICES) }}
+
+    steps:
+      - name: Build ${{ matrix.service }} with Maven
+        run: |
+          cd back/${{ matrix.service }}
+          mvn clean package -DskipTests
+
+  push_to_docker:
+    name: Push to Docker Hub
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main' && startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Push to Docker Hub
+        run: |
+          docker push re-tail/${{ github.event.repository.name }}:${{ github.sha }}
