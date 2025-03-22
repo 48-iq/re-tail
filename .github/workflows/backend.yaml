@@ -26,6 +26,7 @@ jobs:
         run: |
           CHANGED_SERVICES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- back/ | grep '/' | cut -d'/' -f2 | sort -u | grep -v '^core$' | tr '\n' ' ')
           echo "SERVICES=${CHANGED_SERVICES}" >> $GITHUB_OUTPUT
+          echo "${CHANGED_SERVICES}"
 
   setup_environment:
     runs-on: ubuntu-latest
