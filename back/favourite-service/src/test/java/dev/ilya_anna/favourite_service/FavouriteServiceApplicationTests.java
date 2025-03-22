@@ -6,6 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class FavouriteServiceApplicationTests {
     @Test
     void helloWorld() {
-        System.out.println("Hello world");
+        System.out.println("Hello world 2");
     }
 }
