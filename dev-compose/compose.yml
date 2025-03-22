@@ -78,7 +78,9 @@ services:
   gateway:
     build:
       context: ../back
-      dockerfile: ../dev-compose/gateway.Dockerfile
+      dockerfile: Dockerfile
+      args:
+        - SERVICE=gateway
     ports:
       - 8080:8080
     healthcheck:
@@ -137,7 +139,9 @@ services:
   user-service:
     build:
       context: ../back
-      dockerfile: ../dev-compose/user-service.Dockerfile
+      dockerfile: Dockerfile
+      args:
+        - SERVICE=user-service
     ports:
       - :8080
     depends_on:
@@ -162,94 +166,12 @@ services:
     networks:
       - back-network
 
-  blacklist-service:
-    build:
-      context: ../back
-      dockerfile: ../dev-compose/blacklist-service.Dockerfile
-    ports:
-      - :8080
-    depends_on:
-      discovery-service:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      - POSTGRES_URI=jdbc:postgresql://postgres:5432/blacklist_service
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - REDIS_DATABASE_NUMBER=3
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - EUREKA_URI=http://discovery-service:8761/eureka
-      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
-    networks:
-      - back-network
-
-  chat-service:
-    build:
-      context: ../back
-      dockerfile: ../dev-compose/chat-service.Dockerfile
-    ports:
-      - :8080
-    depends_on:
-      discovery-service:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      - POSTGRES_URI=jdbc:postgresql://postgres:5432/chat_service
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - REDIS_DATABASE_NUMBER=4
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - EUREKA_URI=http://discovery-service:8761/eureka
-      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
-    networks:
-      - back-network
-
-  comment-service:
-    build:
-      context: ../back
-      dockerfile: ../dev-compose/comment-service.Dockerfile
-    ports:
-      - :8080
-    depends_on:
-      discovery-service:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      - POSTGRES_URI=jdbc:postgresql://postgres:5432/comment_service
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - REDIS_DATABASE_NUMBER=5
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - EUREKA_URI=http://discovery-service:8761/eureka
-      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
-    networks:
-      - back-network
-
   favourite-service:
     build:
       context: ../back
-      dockerfile: ../dev-compose/favourite-service.Dockerfile
+      dockerfile: Dockerfile
+      args:
+        - SERVICE=favourite-service
     ports:
       - :8080
     depends_on:
@@ -277,7 +199,9 @@ services:
   recommendation-service:
     build:
       context: ../back
-      dockerfile: ../dev-compose/recommendation-service.Dockerfile
+      dockerfile: Dockerfile
+      args:
+        - SERVICE=recommendation-service
     ports:
       - :8080
     depends_on:
@@ -292,34 +216,6 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_URI=http://discovery-service:8761/eureka
-    networks:
-      - back-network
-
-  notification-service:
-    build:
-      context: ../back
-      dockerfile: ../dev-compose/notification-service.Dockerfile
-    ports:
-      - :8080
-    depends_on:
-      discovery-service:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      - POSTGRES_URI=jdbc:postgresql://postgres:5432/notification_service
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - REDIS_DATABASE_NUMBER=7
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - EUREKA_URI=http://discovery-service:8761/eureka
-      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
     networks:
       - back-network
 
