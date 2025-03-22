@@ -3,13 +3,13 @@ name: Backend CI/CD Pipeline
 on:
   pull_request:
     paths:
-      - 'back/announcements-service'
-      - 'back/auth-service'
-      - 'back/discovery-service'
-      - 'back/favourite-service'
-      - 'back/gateway'
-      - 'back/recommendation-service'
-      - 'back/user-service'
+      - 'back/announcements-service/**'
+      - 'back/auth-service/**'
+      - 'back/discovery-service/**'
+      - 'back/favourite-service/**'
+      - 'back/gateway/**'
+      - 'back/recommendation-service/**'
+      - 'back/user-service/**'
 
 jobs:
   determine_changes:
