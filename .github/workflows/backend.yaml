@@ -14,6 +14,9 @@ on:
 jobs:
   determine_changes:
     runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.get_changed_services.outputs.SERVICES }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -22,7 +25,7 @@ jobs:
         id: get_changed_services
         run: |
           CHANGED_SERVICES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- back/ | grep '/' | cut -d'/' -f2 | sort -u | grep -v '^core$' | tr '\n' ' ')
-          echo "SERVICES=${CHANGED_SERVICES}" >> $GITHUB_ENV
+          echo "SERVICES=${CHANGED_SERVICES}" >> $GITHUB_OUTPUT
 
   setup_environment:
     runs-on: ubuntu-latest
@@ -50,10 +53,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     needs: setup_environment
-    if: ${{ env.SERVICES != '' }}
+    if: ${{ needs.determine_changes.outputs.SERVICES != '' }}
     strategy:
       matrix:
-        service: ${{ fromJson(env.SERVICES) }}
+        service: ${{ fromJson(needs.determine_changes.outputs.SERVICES) }}
 
     steps:
       - name: Lint with Checkstyle for ${{ matrix.service }}
@@ -67,7 +70,7 @@ jobs:
     if: success()
     strategy:
       matrix:
-        service: ${{ fromJson(env.SERVICES) }}
+        service: ${{ fromJson(needs.determine_changes.outputs.SERVICES.SERVICES) }}
 
     steps:
       - name: Run tests for ${{ matrix.service }}
@@ -81,7 +84,7 @@ jobs:
     if: success()
     strategy:
       matrix:
-        service: ${{ fromJson(env.SERVICES) }}
+        service: ${{ fromJson(needs.determine_changes.outputs.SERVICES.SERVICES) }}
 
     steps:
       - name: Build ${{ matrix.service }} with Maven
